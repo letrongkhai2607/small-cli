@@ -48,10 +48,32 @@ var IPAdress = &cobra.Command{
 	},
 }
 
+var MembersProfile = &cobra.Command{
+	Use:   "Group",
+	Short: "Show members profile of KPOP groups",
+	Long:  `Lookup the members profile by group name`,
+	Args:  cobra.MinimumNArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		Idols(args[0])
+	},
+}
+
+var DetailProfile = &cobra.Command{
+	Use:   "Detail",
+	Short: "Show detail member profile of KPOP groups",
+	Long:  `Lookup the detail member profile by group and idol name`,
+	Args:  cobra.MinimumNArgs(2),
+	Run: func(cmd *cobra.Command, args []string) {
+		DetailIdol(args[0] , args[1])
+	},
+}
+
 // AddCommands launches all commands
 func AddCommands() {
 	RootCmd.AddCommand(SearchByFile)
 	RootCmd.AddCommand(SearchByLink)
 	RootCmd.AddCommand(RandomJoke)
 	RootCmd.AddCommand(IPAdress)
+	RootCmd.AddCommand(MembersProfile)
+	RootCmd.AddCommand(DetailProfile)
 }

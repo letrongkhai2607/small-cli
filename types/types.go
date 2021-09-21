@@ -29,3 +29,14 @@ type Response struct {
 		Image      string  `json:"image"`
 	} `json:"result"`
 }
+
+type Idol struct {
+	StageName string `json:"stageName"`
+	BirthName string `json:"birthName"`
+	Position string `json:"position"`
+	Birthday string `json:"birthday"`
+	Height string `json:"height"`
+	Weight string `json:"weight"`
+	BloodType string `json:"bloodType"`
+	Nationality string `json:"nationality"`
+}

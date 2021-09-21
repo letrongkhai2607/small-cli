@@ -13,6 +13,7 @@ import (
 	"bytes"
 	"mime/multipart"
 	"path/filepath"
+	"github.com/gocolly/colly/v2"
 	types "example.com/m/v2/types"
 	helpers "example.com/m/v2/helpers"
 )
@@ -146,4 +147,120 @@ func getIPAdress() {
 			fmt.Println("IPv4: " , IPv4)
 		}   
 	}
+}
+
+func Idols(nameGroup string) {
+	type Idol struct{
+		IdolName string `json:"idolName"`
+		DetailInformationUR string `json:"detailInformationURL"`
+		ImageURL string `json:"imageUrl"`
+	}
+	type Response struct{
+		GroupName string `json:"groupName"`
+		Members int `json:"members"`
+		Data []Idol `json:"data"`
+	}
+	idols := make([]Idol, 0)
+	
+	c := colly.NewCollector()
+	const (
+		slug = ""
+		baseURL = "https://www.kpopmap.com/kpop-member-profile/"
+	)
+	url := baseURL + nameGroup
+	
+	c.OnHTML(".profile-content", func(e *colly.HTMLElement) {
+		e.ForEach(".profile-item .item-wrap .member ul li", func(_ int, m *colly.HTMLElement) {
+			
+			idolName := m.ChildText(".name a")
+			detailInformationURL := m.ChildAttr(".img-wrap a" , "href")
+			urlImage := m.ChildAttr(".img-wrap a img" , "src")
+			idol := Idol{
+				IdolName: idolName,
+				DetailInformationUR: detailInformationURL,
+				ImageURL: urlImage,
+			}
+			idols = append(idols , idol)
+		})
+		fmt.Println("* Idol group:" , nameGroup)
+		fmt.Println("* Members:" , len(idols))
+		fmt.Println()
+		for _, val := range idols{
+			fmt.Println("* Idol Name: " + val.IdolName)
+			fmt.Println("* Idol Image: " + val.ImageURL)
+			fmt.Println("* Idol Detail Information URL : " + val.DetailInformationUR)
+			fmt.Println()
+		}
+		// response :=  Response{
+		// 	GroupName : nameGroup,
+		// 	Members: len(idols),
+		// 	Data: idols,
+		// }
+		// enc := json.NewEncoder(os.Stdout)
+		// enc.SetIndent("" , " ")
+		// enc.Encode(response)
+	})
+	c.OnRequest(func(r *colly.Request) {})
+	c.Visit(url)
+}
+
+func DetailIdol(nameGroup string , nameIdol string) {
+	type Detail struct{
+		Label string `json:"label"`
+		LabelContent string `json:"labelContent"`
+	}
+	type Response struct{
+		IdolName string `json:"idolName"`
+		GroupName string `json:"groupName"`
+		Position string `json:"position"`
+		Information []Detail `json:"informations"`
+	}
+
+	
+	detail := make([]Detail , 0)
+	c := colly.NewCollector()
+
+	const (
+		slash = "-"
+		baseURL = "https://www.kpopmap.com/kpop-profile/"
+	)
+
+	url := baseURL + nameGroup + slash + nameIdol
+
+	c.OnHTML(".profile-content", func(e *colly.HTMLElement) {
+
+		name := e.ChildText(".profile-top h2")
+		group := e.ChildText(".profile-top a")
+		position := e.ChildText(".profile-item .item-wrap .full p")
+		e.ForEach(".profile-item .item-wrap .half", func(_ int, m *colly.HTMLElement) {
+			label := m.ChildText("span")
+			labelContent := m.ChildText("p")
+			
+			idolInformation := Detail {
+				Label: label,
+				LabelContent: labelContent,
+			}
+			detail = append(detail , idolInformation)
+			
+		})
+		fmt.Println("* Idol name:" , name)
+		fmt.Println("* Member of:" , group)
+		fmt.Println("* Position:" , position)
+		fmt.Println()
+		for _, val := range detail{
+			fmt.Println("* " + val.Label + ":" + val.LabelContent)
+		}
+		// response :=  Response{
+		// 	IdolName : name,
+		// 	GroupName: group,
+		// 	Position: position,
+		// 	Information: detail,
+		// }
+		// enc := json.NewEncoder(os.Stdout)
+		// enc.SetIndent("" , " ")
+		// enc.Encode(response)
+	})
+	c.OnRequest(func(r *colly.Request) {})
+	
+	c.Visit(url)
 }
