@@ -50,11 +50,11 @@ var IPAdress = &cobra.Command{
 
 var MembersProfile = &cobra.Command{
 	Use:   "Group",
-	Short: "Show members profile of KPOP groups",
+	Short: "Show members profile of KPOP groups , type true if you want to dowload all idols image",
 	Long:  `Lookup the members profile by group name`,
-	Args:  cobra.MinimumNArgs(1),
+	Args:  cobra.MinimumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
-		Idols(args[0])
+		Idols(args[0] , args[1])
 	},
 }
 
@@ -68,6 +68,15 @@ var DetailProfile = &cobra.Command{
 	},
 }
 
+var Dowload = &cobra.Command{
+	Use:   "Dowloader",
+	Short: "Dowload an image",
+	Long:  `Dowloading an image by given an image URL`,
+	Args:  cobra.MinimumNArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		Dowloader(args[0])
+	},
+}
 // AddCommands launches all commands
 func AddCommands() {
 	RootCmd.AddCommand(SearchByFile)
@@ -76,4 +85,5 @@ func AddCommands() {
 	RootCmd.AddCommand(IPAdress)
 	RootCmd.AddCommand(MembersProfile)
 	RootCmd.AddCommand(DetailProfile)
+	RootCmd.AddCommand(Dowload)
 }

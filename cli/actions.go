@@ -18,8 +18,6 @@ import (
 	helpers "example.com/m/v2/helpers"
 )
 
-
-
 func RandowJoke() error {
 	url := "https://icanhazdadjoke.com/"
 	responseBytes := GetJokeData(url)
@@ -149,7 +147,7 @@ func getIPAdress() {
 	}
 }
 
-func Idols(nameGroup string) {
+func Idols(nameGroup string , isDowload string) {
 	type Idol struct{
 		IdolName string `json:"idolName"`
 		DetailInformationUR string `json:"detailInformationURL"`
@@ -188,6 +186,9 @@ func Idols(nameGroup string) {
 		for _, val := range idols{
 			fmt.Println("* Idol Name: " + val.IdolName)
 			fmt.Println("* Idol Image: " + val.ImageURL)
+			if isDowload == "true" {
+				Dowloader(val.ImageURL)
+			}
 			fmt.Println("* Idol Detail Information URL : " + val.DetailInformationUR)
 			fmt.Println()
 		}
@@ -263,4 +264,10 @@ func DetailIdol(nameGroup string , nameIdol string) {
 	c.OnRequest(func(r *colly.Request) {})
 	
 	c.Visit(url)
+}
+
+func Dowloader(fullUrlFile string){
+	fileName := helpers.BuildFileName(fullUrlFile)
+	file := helpers.CreateFile(fileName)
+	helpers.PutFile(file , helpers.HttpClient() , fullUrlFile)
 }
